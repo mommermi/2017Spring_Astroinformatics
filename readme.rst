@@ -8,7 +8,7 @@ This tutorial was taught as part of Prof. Trujillo's Astroinformatics
 The easiest way to get all the files of this tutorial is to clone this
 repository:
 
-    > git clone https://github.com/mommermi/2017Spring_Astroinformatics.git
+    git clone https://github.com/mommermi/2017Spring_Astroinformatics.git
 
 Sample data can be found in the ``/data`` directory, auxiliary scripts
 are located in ``/scripts``, and all the parameter and configuration
@@ -23,7 +23,7 @@ coordinates and sky coordinates. This translation is defined using the
 the header of FITS files; software like `SAO DS9`_, `astropy.wcs`_, or
 `Aladin`_ can use WCS information to provide the translation.
 Although being incredibly useful for image analysis purposes, most
-observatories do not provide WCS by default.
+observatories do not provide (accurate) WCS information by default.
 
 
 Image Registration
@@ -70,9 +70,10 @@ Image Preparation
 SCAMP requires some rough WCS information for each image, specifically
 the field center coordinates (in both pixel and sky coordinates) and
 the pixel scale. The sample data already have some WCS information,
-which are not very accurate: there is an offset of about 11
-arcminutes. Let's discuss the required FITS header keyqords quickly
-for one of the sample images:
+which are not very accurate, but good enough: there is an offset of
+about 11 arcminutes between the assumed and actual sky
+positions. Let's discuss the required FITS header keywords quickly for
+one of the sample images:
 
 * ``CTYPE1`` and ``CTYPE2``: the projection type in RA (axis 1) and
   Dec (axis 2); we use gnomonic projection, hence: ``CTYPE1 =
@@ -105,11 +106,11 @@ Before we can use SCAMP, we have to create a source catalog using
 Extractor's configuration and parameter files. Create a configuration
 file with
 
-    > sextractor -d > config.sex
+    sextractor -d > config.sex
 
 and a parameter file with
 
-    > sextractor -dp > default.param
+    sextractor -dp > default.param
 
 The following fields have to be activated (uncommented) in the
 parameter file (``default.param``):
@@ -121,9 +122,9 @@ parameter file (``default.param``):
 * ``FLUX_AUTO``, ``FLUXERR_AUTO``: use Kron-like photometry
 * ``FLAGS``: diagnostic field (optional)
 
-(or use the files provided in the ``/ setup`` directory of this repository.)
+(or use the files provided in the ``/setup`` directory of this repository.)
 
-It is mandatory to write the resulting catalog into LDAC file. This
+It is mandatory to write the resulting catalog into a LDAC file. This
 can be changed in the configuration file (``config.sex``), along with
 some other optional things that can be used to control the source
 properties for the extraction:
@@ -136,7 +137,7 @@ properties for the extraction:
   (improves photometry results)
 
 Run Source Extractor on each of the images using:
-    > sextractor <filename>.fits -c config.sex -CATALOG_NAME <filename>.ldac
+    sextractor <filename>.fits -c config.sex -CATALOG_NAME <filename>.ldac
 
 You can have a look at the LDAC catalogs using ``ldactoasc <filename>.ldac``.
 
@@ -146,7 +147,7 @@ Running SCAMP to Register the Images
 SCAMP has to be setup in a similar way as Source Extractor. Generate a
 SCAMP configuration file with
 
-    > scamp -d > config.scamp
+    scamp -d > config.scamp
 
 The most important parameters to change are:
 
@@ -163,7 +164,7 @@ The most important parameters to change are:
 
 Running SCAMP is then as simple as:
 
-    > scamp \*.ldac -c config.scamp
+    scamp \*.ldac -c config.scamp
     
 SCAMP actually runs on the LDAC catalogs and not the image files;
 you can run it over all catalogs at a time. If SCAMP succeeds
@@ -202,7 +203,7 @@ Once our images are registered, co-adding them is really simple using
 meaning that all settings are done in a configuration file. We create
 a configuration file with
 
-    > swarp -d > config.swarp
+    swarp -d > config.swarp
 
 The most important settings are:
 
@@ -215,7 +216,7 @@ The most important settings are:
 We can use the default configurations (``setup/config.swarp``) to
 create a median combine of our sample data:
 
-    > swarp mscience0*fits -c config.swarp
+    swarp mscience0*fits -c config.swarp
 
 The resulting image, ``coadd.fits``, is signficantly deeper than the
 individual frames and - more importantly - the bright asteroid is not
