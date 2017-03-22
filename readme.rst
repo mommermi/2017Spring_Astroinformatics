@@ -8,7 +8,7 @@ This tutorial was taught as part of Prof. Trujillo's Astroinformatics
 The easiest way to get all the files of this tutorial is to clone this
 repository:
 
-    > git clone XXX
+    > git clone https://github.com/mommermi/2017Spring_Astroinformatics.git
 
 Sample data can be found in the ``/data`` directory, auxiliary scripts
 are located in ``/scripts``, and all the parameter and configuration
@@ -224,6 +224,7 @@ present anymore in the combined image.
 Image Co-Addition in a Co-Moving Frame
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+TBD...
 
 
 
