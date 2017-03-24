@@ -139,7 +139,9 @@ properties for the extraction:
 Run Source Extractor on each of the images using:
     sextractor <filename>.fits -c config.sex -CATALOG_NAME <filename>.ldac
 
-You can have a look at the LDAC catalogs using ``ldactoasc <filename>.ldac``.
+The ``-CATALOG_NAME`` option overwrites the ``CATALOG_NAME`` setting
+in ``config.scamp``. You can have a look at the LDAC catalogs using
+``ldactoasc <filename>.ldac``.
 
 Running SCAMP to Register the Images
 ....................................
@@ -186,20 +188,25 @@ Once the WCS solution has been implanted, use DS9 to display one of
 the images and display the 2MASS catalog excerpt for this field
 (``Analysis/Catalogs/Infrared/2MASS Point Sources``). As you can see,
 the catalog positions match the locations of the stars in the image
-very well.
+very well. One advantage of SCAMP is that it derives image distortion
+terms (e.g., as a result of the optical design) at the same time,
+making it very powerful and accurate.
 
 
 Image Co-Addition
 -----------------
 
-Image Co-addition, or stacking, is used to improve the signal-to-noise
-ratio of sources in the image. In an ideal world, combining 30
-ten-second integrations has the same depth as a 300-second
-integration. Images are combined using average or median operations by
-matching pixels that correspond to the same position in the sky.
+Image Co-addition, or stacking, is used to reduce the noise improve
+the signal-to-noise ratio of sources in the image. In an ideal world,
+combining 30 ten-second integrations has the same depth as a
+300-second integration. Images are combined using average or median
+operations by matching pixels that correspond to the same position in
+the sky.
 
 Once our images are registered, co-adding them is really simple using
-`SWARP`_. It uses an interface similar to Source Extractor and SCAMP,
+`SWARP`_. The advantage of SWARP compared to simple shift-and-rotate
+image matching is that it accounts for image distortions found by
+SCAMP. SWARP uses an interface similar to Source Extractor and SCAMP,
 meaning that all settings are done in a configuration file. We create
 a configuration file with
 
@@ -208,7 +215,8 @@ a configuration file with
 The most important settings are:
 
 * ``IMAGEOUT_NAME``: the output image name
-* ``COMBINE_TYPE``: the operation used in the image combination
+* ``COMBINE_TYPE``: the operation used in the image combination; we
+  will use a ``MEDIAN`` combination
 * ``CENTER_TYPE``: ``ALL`` only uses that part of the sky that is
   shared by all input images; ``MOST`` uses that part of the sky that
   is sharded by most images
@@ -218,14 +226,34 @@ create a median combine of our sample data:
 
     swarp mscience0*fits -c config.swarp
 
-The resulting image, ``coadd.fits``, is signficantly deeper than the
-individual frames and - more importantly - the bright asteroid is not
-present anymore in the combined image.
+The resulting image, ``coadd.fits``, is a combination of the
+individual frames in the restframe of the sky background, which is
+signficantly deeper than the individual frames and - more
+importantly - the bright asteroid is not present anymore in the
+combined image.
 
 Image Co-Addition in a Co-Moving Frame
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-TBD...
+In the same way that we can combine the images in the restframe of the
+sky background, we can combine them in the moving frame of the
+asteroid. We just have to tell SWARP to shift the individual frames
+with respect to each other. The easiest way to do that is to change
+the FITS WCS information in such a way that we shift the sky reference
+position (``CRVAL1`` and ``CRVAL2``) in accordance with the asteroid's
+track in the sky.
+
+You can use the ``scripts/move_frames.py`` script to change the sky
+reference position of the sample data frames. The shifted files end on
+``_shifted.fits``.
+
+This time we run SWARP on the shifted images and use a different filename for the final output:
+
+    swarp mscience0*shifted.fits -c config.swarp -IMAGEOUT_NAME comove.fits
+
+
+
+
 
 
 
